@@ -1,0 +1,792 @@
+<title>ARDUA Caps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: sticky bar over a split hero (copy | smoke shot), spec strip, product grid with filters, craft split, info columns; cart is a right drawer, product and checkout are sheets. Square corners echo the angular mark. */
+:root{
+  --bg:#0a0a0b;
+  --surface:#131315;
+  --surface-2:#1a1a1d;
+  --line:#2a2b2f;
+  --line-2:#3a3b40;
+  --fg:#f2f1ee;
+  --muted:#9a9ca2;
+  --bar:rgba(10,10,11,.88);
+  --ok:#7fc8a0;
+  --danger:#e58b8b;
+  --display:"Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --body:"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+img{display:block;max-width:100%}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+h1,h2,h3,p,dl,dd,ul{margin:0}
+ul{padding:0;list-style:none}
+
+.wrap{width:100%;max-width:1200px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.display{font-family:var(--display);font-stretch:125%;font-weight:800;text-transform:uppercase;text-wrap:balance;line-height:1}
+section[id]{scroll-margin-top:calc(72px + env(safe-area-inset-top,0px))}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 22px;border:1px solid var(--fg);background:var(--fg);color:var(--bg);font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:background .15s,color .15s,border-color .15s}
+.btn:hover{background:transparent;color:var(--fg)}
+.btn.ghost{background:transparent;color:var(--fg);border-color:var(--line-2)}
+.btn.ghost:hover{border-color:var(--fg)}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+.btn.small{min-height:38px;padding:0 14px;font-size:11px}
+.icon-btn{display:inline-grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);background:transparent;border-radius:2px}
+.icon-btn:hover{border-color:var(--fg)}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bar);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{height:26px;width:auto}
+.brand span{font-family:var(--display);font-stretch:125%;font-weight:700;letter-spacing:.2em;font-size:15px}
+.top nav{display:flex;gap:24px;margin-left:auto}
+.top nav a{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.top nav a:hover{color:var(--fg)}
+.cart-btn{display:inline-flex;align-items:center;gap:10px;height:42px;padding:0 14px;border:1px solid var(--line-2);background:transparent;border-radius:2px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.cart-btn:hover{border-color:var(--fg)}
+.cart-btn b{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;background:var(--fg);color:var(--bg);font-weight:500;border-radius:11px;font-size:11px;letter-spacing:0}
+.cart-btn b[data-zero="true"]{background:var(--surface-2);color:var(--muted)}
+@media (max-width:640px){.top nav{display:none}.cart-btn{margin-left:auto}}
+
+/* hero */
+.hero{padding-block:clamp(28px,6vw,72px)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(24px,5vw,64px);align-items:center}
+.hero h1{font-size:clamp(42px,7.4vw,96px);letter-spacing:-.01em;margin:14px 0 20px}
+.hero p.lead{max-width:44ch;color:var(--muted);font-size:17px}
+.hero .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.hero-art{position:relative;border:1px solid var(--line);background:#000;aspect-ratio:1/1;overflow:hidden;min-width:0}
+.hero-art img{width:100%;height:100%;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.hero-art{touch-action:pan-y;cursor:ew-resize}
+.hero-art:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+.spin-hint{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;gap:8px;padding:10px 12px;background:rgba(10,10,11,.82);border:1px solid var(--line-2);font:11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--fg);pointer-events:none}
+.spin-dots{position:absolute;top:12px;right:12px;display:flex;gap:5px;pointer-events:none}
+.spin-dots i{width:5px;height:5px;border-radius:50%;background:#777}
+.spin-dots i.active{background:#fff}
+@media (max-width:820px){.hero .wrap{grid-template-columns:1fr}.hero-art{aspect-ratio:4/3}}
+
+.strip{border-block:1px solid var(--line)}
+.strip ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.strip li{padding:18px 20px 18px 0;display:grid;gap:4px;min-width:0}
+.strip li+li{padding-left:20px;border-left:1px solid var(--line)}
+.strip li span:last-child{font-size:15px}
+@media (max-width:640px){.strip ul{grid-template-columns:1fr}.strip li,.strip li+li{padding:14px 0;border-left:0}.strip li+li{border-top:1px solid var(--line)}}
+
+/* shop */
+.shop{padding-block:clamp(40px,7vw,88px)}
+.shop-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px}
+.shop-head h2,.craft h2,.info h2{font-size:clamp(28px,4.4vw,48px);letter-spacing:-.005em}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:22px 0 28px}
+.field-in{height:44px;width:100%;min-width:0;padding:0 14px;background:var(--surface);border:1px solid var(--line);border-radius:2px;color:var(--fg);font-size:14px}
+.field-in::placeholder{color:#6d6f75}
+.field-in:focus{border-color:var(--fg);outline:none}
+.controls .search{flex:1 1 220px;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:44px;padding:0 16px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:2px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.chip:hover{color:var(--fg);border-color:var(--line-2)}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.controls select.field-in{width:auto;min-width:170px;padding-right:8px}
+select.field-in option{background:var(--surface);color:var(--fg)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:20px}
+.card{display:flex;flex-direction:column;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:2px;overflow:hidden;transition:border-color .15s}
+.card:hover{border-color:var(--line-2)}
+.media{position:relative;display:block;width:100%;padding:0;border:0;background:#000;aspect-ratio:3/2;overflow:hidden}
+.media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.card:hover .media img{transform:scale(1.035)}
+.badge{position:absolute;top:12px;left:12px;padding:5px 9px;background:var(--bg);border:1px solid var(--line-2);font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.card .body{display:flex;flex-direction:column;gap:6px;flex:1;padding:16px}
+.card h3{font-family:var(--display);font-stretch:112%;font-weight:700;font-size:17px;letter-spacing:.04em;text-transform:uppercase}
+.card .short{color:var(--muted);font-size:14px}
+.card .row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:14px}
+.price{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums}
+.empty{padding:48px 16px;text-align:center;border:1px dashed var(--line-2);color:var(--muted);display:grid;gap:14px;justify-items:center}
+
+/* craft */
+.craft{padding-block:clamp(40px,7vw,88px);border-top:1px solid var(--line)}
+.craft .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,64px);align-items:center}
+.craft .art{border:1px solid var(--line);aspect-ratio:1/1;overflow:hidden;background:#000}
+.craft .art img{width:100%;height:100%;object-fit:cover}
+.craft h2{margin:12px 0 18px}
+.craft p{color:var(--muted);max-width:46ch}
+.facts{margin-top:26px;border-top:1px solid var(--line)}
+.facts div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.facts dd{font-size:15px}
+@media (max-width:820px){.craft .wrap{grid-template-columns:1fr}}
+.band{margin-top:clamp(32px,5vw,56px)}
+.band .wrap>div{border:1px solid var(--line);aspect-ratio:21/9;overflow:hidden;background:#000}
+.band img{width:100%;height:100%;object-fit:cover}
+@media (max-width:640px){.band .wrap>div{aspect-ratio:16/9}}
+
+/* info */
+.info{padding-block:clamp(40px,7vw,88px);border-top:1px solid var(--line)}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:28px;margin-top:28px}
+.info-grid div{display:grid;gap:8px;align-content:start;padding-top:16px;border-top:1px solid var(--line-2)}
+.info-grid p{color:var(--muted);font-size:14px}
+
+footer{border-top:1px solid var(--line);padding-block:28px calc(28px + env(safe-area-inset-bottom,0px))}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between}.footer-links{display:flex;flex-wrap:wrap;gap:14px}.footer-links a{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-underline-offset:3px}.footer-links a:hover{color:var(--fg)}
+footer p{max-width:60ch}
+
+/* layers */
+.layer{position:fixed;inset:0;z-index:100;display:none}
+.layer.open{display:block}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.72)}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:min(460px,100%);display:flex;flex-direction:column;background:var(--surface);border-left:1px solid var(--line);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-right:env(safe-area-inset-right,0px)}
+.layer.open .drawer{animation:slide .25s ease}
+@keyframes slide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+.dr-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dr-head h2{font-family:var(--display);font-stretch:112%;font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase}
+.dr-body{flex:1;min-height:0;overflow-y:auto;padding:8px 20px}
+.dr-foot{padding:16px 20px;border-top:1px solid var(--line);display:grid;gap:12px;background:var(--surface)}
+.ship-note{display:grid;gap:8px;padding:14px 0 6px}
+.track{height:3px;background:var(--line);overflow:hidden}
+.track i{display:block;height:100%;background:var(--fg);transition:width .3s}
+.line{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+.line img{width:96px;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line);background:#000}
+.line h3{font-family:var(--display);font-stretch:110%;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+.line .meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:10px}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:2px}
+.stepper button{width:36px;height:36px;border:0;background:transparent;font-size:16px}
+.stepper button:hover{background:var(--surface-2)}
+.stepper span{min-width:30px;text-align:center;font-family:var(--mono);font-size:13px}
+.link{border:0;background:none;padding:0;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--fg)}
+.totals{display:grid;gap:8px}
+.totals div{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.totals .grand{padding-top:10px;border-top:1px solid var(--line);font-size:17px;font-weight:600}
+.promo{display:flex;gap:8px}
+.promo .field-in{flex:1}
+.msg{min-height:1.2em;font-size:13px;color:var(--muted)}
+.msg.ok{color:var(--ok)}
+.msg.err{color:var(--danger)}
+.dr-empty{display:grid;gap:16px;justify-items:start;padding:48px 0}
+.dr-empty p{color:var(--muted)}
+
+.modal-layer{overflow-y:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{position:relative;z-index:1;max-width:1040px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:2px}
+.sheet.wide{max-width:1120px}
+.x{position:absolute;top:10px;right:10px;z-index:3;background:var(--bg)}
+.pv{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.pv-media{padding:0;border-right:1px solid var(--line);min-width:0}
+.pv-main{aspect-ratio:3/2;background:#000;overflow:hidden}
+.pv-main img{width:100%;height:100%;object-fit:cover}
+.thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line)}
+.thumbs button{padding:0;border:0;background:#000;aspect-ratio:3/2;overflow:hidden;opacity:.55}
+.thumbs button[aria-current="true"]{opacity:1;box-shadow:inset 0 -2px 0 var(--fg)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+.pv-info{padding:32px 28px 28px;display:grid;gap:16px;align-content:start;min-width:0}
+.pv-info h2{font-size:clamp(26px,3.4vw,38px);font-stretch:118%;line-height:1.02;padding-right:48px}
+.pv-info .price{font-size:20px}
+.pv-info .desc{color:var(--muted)}
+.opt-label{display:block;margin-bottom:8px}
+.sizes{display:flex;flex-wrap:wrap;gap:8px}
+.size{min-width:74px;height:44px;padding:0 16px;background:transparent;border:1px solid var(--line-2);border-radius:2px;font-family:var(--mono);font-size:12px;letter-spacing:.1em}
+.size[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.buy{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.buy .btn{flex:1 1 180px}
+.specs{border-top:1px solid var(--line)}
+.specs div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+@media (max-width:820px){.pv{grid-template-columns:1fr}.pv-media{border-right:0;border-bottom:1px solid var(--line)}.pv-info{padding:24px 18px 22px}}
+
+.co{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.co form{padding:32px 28px;display:grid;gap:26px;min-width:0}
+.co h2{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:clamp(24px,3vw,32px);text-transform:uppercase;padding-right:48px}
+.co fieldset{border:0;margin:0;padding:0;display:grid;gap:12px;min-width:0}
+.co legend{padding:0;margin-bottom:12px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fld{display:grid;gap:6px;min-width:0}
+.fld label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:2px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--fg);background:var(--surface-2)}
+.opt:has(input:disabled){opacity:.5;cursor:not-allowed}
+.opt input{margin-top:4px;accent-color:#f2f1ee}
+.opt .t{display:grid;gap:2px;flex:1;min-width:0}
+.opt .t small{color:var(--muted);font-size:13px}
+.opt .p{font-family:var(--mono);font-size:13px}
+.co aside{padding:32px 28px;background:var(--surface-2);border-left:1px solid var(--line);display:grid;gap:18px;align-content:start;min-width:0}
+.sum-line{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.sum-line img{width:64px;aspect-ratio:3/2;object-fit:cover;border:1px solid var(--line)}
+.sum-line b{font-weight:600;font-size:14px;display:block}
+.sum-line small{color:var(--muted);font-family:var(--mono);font-size:11px}
+.demo-note{padding:12px 14px;border:1px solid var(--line-2);color:var(--muted);font-size:13px}
+.done{padding:48px 28px;display:grid;gap:18px;justify-items:start;max-width:640px}
+.done h2{font-size:clamp(28px,4vw,44px);font-stretch:120%}
+.done p{color:var(--muted)}
+.done .ordno{font-family:var(--mono);font-size:15px;letter-spacing:.14em;padding:10px 14px;border:1px solid var(--line-2)}
+@media (max-width:820px){.co{grid-template-columns:1fr}.co aside{border-left:0;border-top:1px solid var(--line);order:-1}.co form,.co aside{padding:24px 18px}.done{padding:40px 18px}}
+@media (max-width:460px){.row2{grid-template-columns:1fr}}
+
+.cookie-banner{position:fixed;z-index:250;left:16px;right:16px;bottom:16px;max-width:760px;margin-left:auto;padding:20px;background:var(--surface);border:1px solid var(--line-2);box-shadow:0 10px 40px #0008;display:grid;gap:12px}
+.cookie-banner[hidden]{display:none}
+.cookie-banner p{font-size:14px;color:var(--muted)}
+.cookie-actions{display:flex;flex-wrap:wrap;gap:8px}
+.cookie-banner h2{font-size:18px}
+.consent-row{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted)}
+.consent-row input{margin-top:4px;accent-color:#f2f1ee}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);z-index:200;display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--fg);color:var(--bg);border-radius:2px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{border:0;background:none;color:var(--bg);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;padding:0}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="ARDUA home"><img src="img/mark.png" alt=""><span>ARDUA</span></a>
+    <nav aria-label="Main">
+      <a href="#shop">Shop</a>
+      <a href="#mark">The mark</a>
+      <a href="#info">Info</a>
+    </nav>
+    <button class="cart-btn" id="openCart" type="button" aria-label="Open cart">Cart <b id="cartCount" data-zero="true">0</b></button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="mono">Embroidered caps</span>
+        <h1 class="display">Built<br>to climb.</h1>
+        <p class="lead">Three cap shapes, one mark. Black fabric, white thread, stitched to catch the light.</p>
+        <div class="actions">
+          <a class="btn" href="#shop">Shop caps</a>
+          <a class="btn ghost" href="#mark">See the mark</a>
+        </div>
+      </div>
+      <div class="hero-art" id="heroSpin" tabindex="0" role="img" aria-label="Interactive ARDUA cap photo viewer. Drag horizontally or use the left and right arrow keys to change views.">
+        <img id="heroSpinImage" src="img/trucker.jpg" alt="ARDUA black trucker cap with white embroidered mark, three-quarter view" draggable="false">
+        <div class="spin-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div>
+        <div class="spin-hint"><span>Drag to rotate view</span><span id="spinIndex">01 / 03</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="wrap">
+      <ul>
+        <li><span class="mono">Embroidery</span><span>Raised white thread on black</span></li>
+        <li><span class="mono">Collection</span><span>Two available now, one coming soon</span></li>
+        <li><span class="mono">Shipping</span><span>Fee confirmed on order</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="shop" id="shop">
+    <div class="wrap">
+      <div class="shop-head">
+        <h2 class="display">The caps</h2>
+        <span class="mono" id="resultCount" aria-live="polite"></span>
+      </div>
+      <div class="controls">
+        <div class="search"><input class="field-in" id="search" type="search" placeholder="Search caps" aria-label="Search caps" autocomplete="off"></div>
+        <div class="chips" id="chips" role="group" aria-label="Filter by style"></div>
+        <select class="field-in" id="sort" aria-label="Sort caps">
+          <option value="featured">Sort: Featured</option>
+          <option value="low">Price: Low to high</option>
+          <option value="high">Price: High to low</option>
+          <option value="name">Name: A to Z</option>
+        </select>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" hidden>
+        <p>No caps match your search.</p>
+        <button class="btn ghost small" id="clearFilters" type="button">Clear filters</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="shop" id="coming-soon" style="border-top:1px solid var(--line);padding-top:40px">
+    <div class="wrap">
+      <div class="shop-head"><h2 class="display">Coming soon</h2><span class="mono">Not available to order yet</span></div>
+      <div class="grid" style="margin-top:22px;max-width:580px">
+        <article class="card">
+          <div class="media" aria-hidden="true"><img src="img/washed.jpg" alt="Washed black ARDUA streetwear cap with white embroidered mark" loading="lazy"><span class="badge">Coming soon</span></div>
+          <div class="body"><span class="mono">Streetwear</span><h3>ARDUA Washed Cap</h3><p class="short">Pre-washed black cotton with a soft, worn-in crown.</p><div class="row"><span class="price">Coming soon</span><span class="mono">Unavailable</span></div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="craft" id="mark">
+    <div class="wrap">
+      <div class="art"><img src="img/detail.jpg" alt="Close-up of the white embroidered ARDUA mark on black twill" loading="lazy"></div>
+      <div>
+        <span class="mono">The mark</span>
+        <h2 class="display">Two blades and a rising arrow.</h2>
+        <p>Every ARDUA cap carries the same mark, stitched in dense white thread. It sits raised against the weave, so it catches side light and reads from across a room.</p>
+        <dl class="facts">
+          <div><dt class="mono">Thread</dt><dd>White, raised satin stitch</dd></div>
+          <div><dt class="mono">Fabric</dt><dd>Black twill, cotton and mesh</dd></div>
+          <div><dt class="mono">Shapes</dt><dd>Trucker, washed, structured</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="wrap"><div><img src="img/wordmark.jpg" alt="ARDUA wordmark embroidered in white thread on black fabric" loading="lazy"></div></div>
+  </div>
+
+  <section class="info" id="info">
+    <div class="wrap">
+      <h2 class="display">Before you order</h2>
+      <div class="info-grid">
+        <div><span class="mono">Shipping</span><p>Orders leave in 2 to 3 business days. We confirm your delivery fee and arrival date with you after you order.</p></div>
+        <div><span class="mono">Returns & issues</span><p>Contact us promptly if an item arrives damaged, defective, or different from what you ordered. Your rights under applicable consumer law are preserved.</p></div>
+        <div><span class="mono">One size</span><p>Every cap comes in one size and adjusts at the back.</p></div>
+        <div><span class="mono">Care</span><p>Spot clean with a damp cloth and air dry. Keep the embroidery away from direct heat.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="img/mark.png" alt=""><span>ARDUA</span></a>
+    <div class="footer-links"><a href="privacy.html">Privacy</a><a href="cookies.html">Cookies</a><a href="terms.html">Terms</a><a href="refunds.html">Refunds</a><button class="link" id="cookieSettings" type="button">Cookie settings</button></div><p class="mono">&copy; ARDUA</p>
+  </div>
+</footer>
+
+<!-- Cart drawer -->
+<div class="layer" id="cart" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <div class="scrim" data-close></div>
+  <div class="drawer">
+    <div class="dr-head"><h2 id="cartTitle">Your cart</h2><button class="icon-btn" type="button" data-close aria-label="Close cart">&#10005;</button></div>
+    <div class="dr-body" id="cartBody"></div>
+    <div class="dr-foot" id="cartFoot"></div>
+  </div>
+</div>
+
+<!-- Product sheet -->
+<div class="layer modal-layer" id="product" role="dialog" aria-modal="true" aria-labelledby="pvTitle">
+  <div class="scrim" data-close></div>
+  <div class="sheet">
+    <button class="icon-btn x" type="button" data-close aria-label="Close">&#10005;</button>
+    <div id="pvBody"></div>
+  </div>
+</div>
+
+<!-- Checkout sheet -->
+<div class="layer modal-layer" id="checkout" role="dialog" aria-modal="true" aria-labelledby="coTitle">
+  <div class="scrim" data-close></div>
+  <div class="sheet wide">
+    <button class="icon-btn x" type="button" data-close aria-label="Close checkout">&#10005;</button>
+    <div id="coBody"></div>
+  </div>
+</div>
+
+<section class="cookie-banner" id="cookieBanner" role="dialog" aria-labelledby="cookieTitle" aria-describedby="cookieDescription" hidden>
+  <h2 id="cookieTitle">Your privacy choices</h2>
+  <p id="cookieDescription">This store uses essential browser storage to keep your cart working. We do not run analytics or advertising trackers. You can choose whether to allow optional analytics if added in the future.</p>
+  <label class="consent-row"><input type="checkbox" id="analyticsConsent"> Allow optional analytics (currently none are enabled)</label>
+  <div class="cookie-actions"><button class="btn" id="acceptCookies" type="button">Save choices</button><button class="btn ghost" id="rejectCookies" type="button">Essential only</button><a class="btn ghost" href="cookies.html">Cookie policy</a></div>
+</section>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastCart">View cart</button></div>
+
+<script>
+(function(){
+'use strict';
+
+var PRODUCTS=[
+  {id:'trucker',name:'ARDUA Trucker',cat:'trucker',catLabel:'Trucker',price:500,tag:'Signature',
+   short:'Black front, mesh back, raised white mark.',
+   desc:'A five-panel trucker with a clean black front and a breathable mesh back. The ARDUA mark is embroidered in dense white thread on the front panel. Curved visor, snapback at the rear.',
+   specs:[['Style','Five-panel trucker'],['Front','Black twill, embroidered mark'],['Back','Black mesh, snapback'],['Visor','Curved, stitched rows'],['Fit','One size']],
+   sizes:['One size'],
+   images:[['trucker.jpg','ARDUA trucker cap in black with a white embroidered mark, three-quarter view'],['trucker-dark.jpg','ARDUA trucker cap floating in dark smoke'],['detail.jpg','Close-up of the white embroidered mark']]},
+  {id:'structured',name:'ARDUA Structured Cap',cat:'structured',catLabel:'Structured',price:550,tag:'',
+   short:'A firm crown that holds its shape.',
+   desc:'A structured six-panel cap with a firm crown and a curved visor sewn with concentric rows of stitching. The white ARDUA mark is raised from the black twill, and stitched eyelets on the panels let heat out.',
+   specs:[['Style','Six-panel, structured'],['Fabric','Black twill'],['Panels','Stitched eyelets'],['Visor','Curved, stitched rows'],['Fit','One size']],
+   sizes:['One size'],
+   images:[['structured.jpg','ARDUA structured cap in black on a dark plinth'],['detail.jpg','Close-up of the white embroidered mark'],['wordmark.jpg','ARDUA wordmark embroidered on black fabric']]}
+];
+var CATS=[['all','All'],['trucker','Trucker'],['structured','Structured']];
+var CART_KEY='ardua.cart.v1';
+var MAX_QTY=10;
+/* Paste your Formspree form URL here, e.g. https://formspree.io/f/abcdwxyz */
+var ORDER_ENDPOINT='https://formspree.io/f/xjyglkpp';
+var PROMO={code:'ARDUA10',pct:10};
+var COUNTRIES=['Egypt','United Arab Emirates','Saudi Arabia','United Kingdom','Germany','United States','Other'];
+
+var state={cat:'all',q:'',sort:'featured',cart:[],promo:null};
+var cur=null;
+
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function fmt(n){return Math.round(n).toLocaleString('en-US')+' EGP'}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function byId(id){return PRODUCTS.filter(function(p){return p.id===id})[0]}
+function img(p,i){return 'img/'+p.images[i||0][0]}
+
+/* ---------- cart state ---------- */
+function loadCart(){
+  try{
+    var r=JSON.parse(localStorage.getItem(CART_KEY)||'[]');
+    if(Array.isArray(r)){
+      state.cart=r.filter(function(l){var p=l&&byId(l.id);return p&&p.sizes.indexOf(l.size)>-1&&typeof l.qty==='number'&&l.qty>0}).map(function(l){return {id:l.id,size:l.size,qty:Math.min(MAX_QTY,Math.floor(l.qty))}});
+    }
+  }catch(e){}
+}
+function saveCart(){try{localStorage.setItem(CART_KEY,JSON.stringify(state.cart))}catch(e){}}
+function lineKey(l){return l.id+'|'+l.size}
+function findLine(id,size){return state.cart.filter(function(l){return l.id===id&&l.size===size})[0]}
+function addToCart(id,size,qty){
+  var l=findLine(id,size);
+  if(l){l.qty=Math.min(MAX_QTY,l.qty+qty)}else{state.cart.push({id:id,size:size,qty:Math.min(MAX_QTY,qty)})}
+  saveCart();renderCart();
+}
+function cartCount(){return state.cart.reduce(function(n,l){return n+l.qty},0)}
+function subtotal(){return state.cart.reduce(function(n,l){return n+byId(l.id).price*l.qty},0)}
+function discount(){return state.promo?Math.round(subtotal()*state.promo.pct/100):0}
+
+/* ---------- layers ---------- */
+var LAYERS=['checkout','product','cart'];
+var focusBack={};
+function openLayer(name){
+  var el=document.getElementById(name);
+  focusBack[name]=document.activeElement;
+  el.classList.add('open');
+  document.body.classList.add('lock');
+  if(el.classList.contains('modal-layer'))el.scrollTop=0;
+  var f=el.querySelector('[data-autofocus]')||el.querySelector('.x,.dr-head button');
+  if(f)f.focus({preventScroll:true});
+}
+function closeLayer(name){
+  var el=document.getElementById(name);
+  if(!el.classList.contains('open'))return;
+  el.classList.remove('open');
+  var any=LAYERS.some(function(n){return document.getElementById(n).classList.contains('open')});
+  if(!any)document.body.classList.remove('lock');
+  var b=focusBack[name];
+  if(b&&document.contains(b)&&!any){try{b.focus({preventScroll:true})}catch(e){}}
+}
+document.addEventListener('click',function(e){
+  var c=e.target.closest('[data-close]');
+  if(c){var layer=c.closest('.layer');if(layer)closeLayer(layer.id)}
+});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;
+  for(var i=0;i<LAYERS.length;i++){
+    if(document.getElementById(LAYERS[i]).classList.contains('open')){closeLayer(LAYERS[i]);break}
+  }
+});
+
+/* ---------- toast ---------- */
+var toastTimer=null;
+function toast(msg,withCart){
+  $('#toastMsg').textContent=msg;
+  $('#toastCart').hidden=!withCart;
+  var t=$('#toast');t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show')},3200);
+}
+$('#toastCart').addEventListener('click',function(){$('#toast').classList.remove('show');openLayer('cart')});
+
+/* ---------- catalog ---------- */
+function renderChips(){
+  $('#chips').innerHTML=CATS.map(function(c){
+    return '<button type="button" class="chip" data-cat="'+c[0]+'" aria-pressed="'+(state.cat===c[0])+'">'+c[1]+'</button>';
+  }).join('');
+}
+function filtered(){
+  var q=state.q.trim().toLowerCase();
+  var list=PRODUCTS.filter(function(p){
+    if(state.cat!=='all'&&p.cat!==state.cat)return false;
+    if(!q)return true;
+    return (p.name+' '+p.catLabel+' '+p.short+' '+p.desc).toLowerCase().indexOf(q)>-1;
+  });
+  if(state.sort==='low')list.sort(function(a,b){return a.price-b.price});
+  else if(state.sort==='high')list.sort(function(a,b){return b.price-a.price});
+  else if(state.sort==='name')list.sort(function(a,b){return a.name.localeCompare(b.name)});
+  return list;
+}
+function cardHTML(p){
+  var multi=p.sizes.length>1;
+  return '<article class="card">'+
+    '<button class="media" type="button" data-open="'+p.id+'" aria-label="View '+esc(p.name)+'">'+
+      '<img src="'+img(p)+'" alt="'+esc(p.images[0][1])+'" loading="lazy">'+
+      (p.tag?'<span class="badge">'+esc(p.tag)+'</span>':'')+
+    '</button>'+
+    '<div class="body">'+
+      '<span class="mono">'+esc(p.catLabel)+'</span>'+
+      '<h3>'+esc(p.name)+'</h3>'+
+      '<p class="short">'+esc(p.short)+'</p>'+
+      '<div class="row"><span class="price">'+fmt(p.price)+'</span>'+
+      (multi?'<button class="btn small ghost" type="button" data-open="'+p.id+'">Choose size</button>':'<button class="btn small" type="button" data-quick="'+p.id+'">Add</button>')+
+      '</div>'+
+    '</div></article>';
+}
+function renderGrid(){
+  var list=filtered();
+  $('#grid').innerHTML=list.map(cardHTML).join('');
+  $('#empty').hidden=list.length>0;
+  $('#resultCount').textContent=list.length+(list.length===1?' style':' styles');
+}
+$('#chips').addEventListener('click',function(e){
+  var b=e.target.closest('[data-cat]');if(!b)return;
+  state.cat=b.getAttribute('data-cat');renderChips();renderGrid();
+  var again=$('[data-cat="'+state.cat+'"]');if(again)again.focus();
+});
+$('#search').addEventListener('input',function(e){state.q=e.target.value;renderGrid()});
+$('#sort').addEventListener('change',function(e){state.sort=e.target.value;renderGrid()});
+$('#clearFilters').addEventListener('click',function(){
+  state.cat='all';state.q='';state.sort='featured';
+  $('#search').value='';$('#sort').value='featured';renderChips();renderGrid();
+});
+$('#grid').addEventListener('click',function(e){
+  var o=e.target.closest('[data-open]');
+  if(o){openProduct(o.getAttribute('data-open'));return}
+  var q=e.target.closest('[data-quick]');
+  if(q){var p=byId(q.getAttribute('data-quick'));addToCart(p.id,p.sizes[0],1);toast(p.name+' added',true)}
+});
+
+/* ---------- product sheet ---------- */
+function openProduct(id){
+  var p=byId(id);
+  cur={id:id,size:p.sizes[0],qty:1};
+  var thumbs=p.images.map(function(im,i){
+    return '<button type="button" data-thumb="'+i+'" aria-label="Show photo '+(i+1)+'" aria-current="'+(i===0)+'"><img src="img/'+im[0]+'" alt=""></button>';
+  }).join('');
+  var sizes=p.sizes.length>1
+    ? '<div><span class="mono opt-label">Size</span><div class="sizes" role="group" aria-label="Size">'+p.sizes.map(function(s,i){return '<button type="button" class="size" data-size="'+esc(s)+'" aria-pressed="'+(i===0)+'">'+esc(s)+'</button>'}).join('')+'</div></div>'
+    : '<div><span class="mono opt-label">Size</span><span>'+esc(p.sizes[0])+'</span></div>';
+  var specs=p.specs.map(function(s){return '<div><dt class="mono">'+esc(s[0])+'</dt><dd>'+esc(s[1])+'</dd></div>'}).join('');
+  $('#pvBody').innerHTML=
+    '<div class="pv">'+
+      '<div class="pv-media"><div class="pv-main"><img id="pvMain" src="'+img(p)+'" alt="'+esc(p.images[0][1])+'"></div><div class="thumbs">'+thumbs+'</div></div>'+
+      '<div class="pv-info">'+
+        '<span class="mono">'+esc(p.catLabel)+'</span>'+
+        '<h2 class="display" id="pvTitle">'+esc(p.name)+'</h2>'+
+        '<p class="price">'+fmt(p.price)+'</p>'+
+        '<p class="desc">'+esc(p.desc)+'</p>'+
+        sizes+
+        '<div class="buy"><div class="stepper" role="group" aria-label="Quantity"><button type="button" data-qty="-1" aria-label="Decrease quantity">&minus;</button><span id="pvQty" aria-live="polite">1</span><button type="button" data-qty="1" aria-label="Increase quantity">+</button></div>'+
+        '<button class="btn" type="button" id="pvAdd" data-autofocus>Add to cart</button></div>'+
+        '<dl class="specs">'+specs+'</dl>'+
+      '</div>'+
+    '</div>';
+  openLayer('product');
+}
+$('#pvBody').addEventListener('click',function(e){
+  if(!cur)return;
+  var p=byId(cur.id);
+  var t=e.target.closest('[data-thumb]');
+  if(t){
+    var i=+t.getAttribute('data-thumb');
+    var m=$('#pvMain');m.src='img/'+p.images[i][0];m.alt=p.images[i][1];
+    $$('[data-thumb]').forEach(function(b){b.setAttribute('aria-current',String(b===t))});
+    return;
+  }
+  var s=e.target.closest('[data-size]');
+  if(s){
+    cur.size=s.getAttribute('data-size');
+    $$('[data-size]').forEach(function(b){b.setAttribute('aria-pressed',String(b===s))});
+    return;
+  }
+  var q=e.target.closest('[data-qty]');
+  if(q){
+    cur.qty=Math.max(1,Math.min(MAX_QTY,cur.qty+(+q.getAttribute('data-qty'))));
+    $('#pvQty').textContent=cur.qty;return;
+  }
+  if(e.target.closest('#pvAdd')){
+    addToCart(cur.id,cur.size,cur.qty);
+    closeLayer('product');
+    openLayer('cart');
+  }
+});
+
+/* ---------- cart drawer ---------- */
+function renderCart(){
+  var n=cartCount();
+  var badge=$('#cartCount');badge.textContent=n;badge.setAttribute('data-zero',String(n===0));
+  var body=$('#cartBody'),foot=$('#cartFoot');
+  if(!state.cart.length){
+    body.innerHTML='<div class="dr-empty"><p>Your cart is empty.</p><button class="btn" type="button" data-close>Shop caps</button></div>';
+    foot.hidden=true;return;
+  }
+  foot.hidden=false;
+  var sub=subtotal(),disc=discount(),after=sub-disc;
+  var lines=state.cart.map(function(l){
+    var p=byId(l.id),k=esc(lineKey(l));
+    return '<div class="line"><img src="'+img(p)+'" alt="">'+
+      '<div><h3>'+esc(p.name)+'</h3><span class="mono">'+esc(l.size)+'</span>'+
+      '<div class="meta"><div class="stepper"><button type="button" data-act="dec" data-key="'+k+'" aria-label="Decrease quantity of '+esc(p.name)+'">&minus;</button><span>'+l.qty+'</span><button type="button" data-act="inc" data-key="'+k+'" aria-label="Increase quantity of '+esc(p.name)+'">+</button></div>'+
+      '<button class="link" type="button" data-act="rm" data-key="'+k+'">Remove</button></div></div>'+
+      '<span class="price">'+fmt(p.price*l.qty)+'</span></div>';
+  }).join('');
+  body.innerHTML=lines;
+  var promoMsg=state.promo?'<p class="msg ok" id="promoMsg">'+PROMO.code+' applied: '+PROMO.pct+'% off.</p>':'<p class="msg" id="promoMsg"></p>';
+  foot.innerHTML=
+    '<form class="promo" id="promoForm"><input class="field-in" id="promoInput" placeholder="Promo code" aria-label="Promo code" autocomplete="off"><button class="btn ghost small" type="submit">Apply</button></form>'+promoMsg+
+    '<div class="totals"><div><span>Subtotal</span><span>'+fmt(sub)+'</span></div>'+
+    (disc?'<div><span>Discount</span><span>&minus;'+fmt(disc)+'</span></div>':'')+
+    '<div class="grand"><span>Total</span><span>'+fmt(after)+'</span></div><span class="mono">Delivery fee confirmed after you order</span></div>'+
+    '<button class="btn block" type="button" id="goCheckout">Checkout</button>';
+}
+$('#cartBody').addEventListener('click',function(e){
+  var b=e.target.closest('[data-act]');if(!b)return;
+  var key=b.getAttribute('data-key'),act=b.getAttribute('data-act');
+  var l=state.cart.filter(function(x){return lineKey(x)===key})[0];if(!l)return;
+  if(act==='inc')l.qty=Math.min(MAX_QTY,l.qty+1);
+  else if(act==='dec')l.qty=l.qty-1;
+  else l.qty=0;
+  state.cart=state.cart.filter(function(x){return x.qty>0});
+  saveCart();renderCart();
+  var again=$('#cartBody [data-act="'+act+'"][data-key="'+key+'"]')||$('#cartBody [data-act]');
+  if(again)again.focus();
+});
+$('#cartFoot').addEventListener('submit',function(e){
+  if(e.target.id!=='promoForm')return;
+  e.preventDefault();
+  var v=$('#promoInput').value.trim().toUpperCase();
+  if(!v)return;
+  if(v===PROMO.code){state.promo=PROMO;renderCart()}
+  else{var m=$('#promoMsg');m.textContent='That code is not valid.';m.className='msg err'}
+});
+$('#cartFoot').addEventListener('click',function(e){
+  if(e.target.closest('#goCheckout')){closeLayer('cart');openCheckout()}
+});
+$('#openCart').addEventListener('click',function(){openLayer('cart')});
+
+/* ---------- checkout ---------- */
+var ship='standard';
+function summaryHTML(){
+  var sub=subtotal(),disc=discount(),total=sub-disc;
+  var lines=state.cart.map(function(l){
+    var p=byId(l.id);
+    return '<div class="sum-line"><img src="'+img(p)+'" alt=""><div><b>'+esc(p.name)+'</b><small>'+esc(l.size)+' &times; '+l.qty+'</small></div><span class="price">'+fmt(p.price*l.qty)+'</span></div>';
+  }).join('');
+  return '<span class="mono">Order summary</span><div>'+lines+'</div>'+
+    '<div class="totals"><div><span>Subtotal</span><span>'+fmt(sub)+'</span></div>'+
+    (disc?'<div><span>Discount ('+PROMO.code+')</span><span>&minus;'+fmt(disc)+'</span></div>':'')+
+    '<div><span>Delivery</span><span>To be confirmed</span></div>'+
+    '<div class="grand"><span>Total</span><span>'+fmt(total)+'</span></div></div>';
+}
+function openCheckout(){
+  if(!state.cart.length)return;
+  var countries=COUNTRIES.map(function(c){return '<option>'+esc(c)+'</option>'}).join('');
+  $('#coBody').innerHTML=
+    '<div class="co"><form id="coForm" autocomplete="on">'+
+      '<h2 id="coTitle">Checkout</h2>'+
+      '<fieldset><legend class="mono">Contact</legend>'+
+        '<div class="fld"><label for="coEmail">Email</label><input class="field-in" id="coEmail" name="email" type="email" required autocomplete="email" data-autofocus></div>'+
+        '<div class="fld"><label for="coPhone">Phone</label><input class="field-in" id="coPhone" name="phone" type="tel" required autocomplete="tel"></div>'+
+      '</fieldset>'+
+      '<fieldset><legend class="mono">Delivery</legend>'+
+        '<div class="row2"><div class="fld"><label for="coFirst">First name</label><input class="field-in" id="coFirst" required autocomplete="given-name"></div><div class="fld"><label for="coLast">Last name</label><input class="field-in" id="coLast" required autocomplete="family-name"></div></div>'+
+        '<div class="fld"><label for="coAddr">Address</label><input class="field-in" id="coAddr" required autocomplete="street-address"></div>'+
+        '<div class="row2"><div class="fld"><label for="coCity">City</label><input class="field-in" id="coCity" required autocomplete="address-level2"></div><div class="fld"><label for="coZip">Postcode</label><input class="field-in" id="coZip" autocomplete="postal-code"></div></div>'+
+        '<div class="fld"><label for="coCountry">Country</label><select class="field-in" id="coCountry" autocomplete="country-name">'+countries+'</select></div>'+
+      '</fieldset>'+
+      '<fieldset><legend class="mono">Payment</legend>'+
+        '<label class="opt"><input type="radio" name="pay" value="cod" checked><span class="t"><b>Cash on delivery</b><small>Pay when your order arrives</small></span></label>'+
+        '<label class="opt"><input type="radio" name="pay" value="card" disabled><span class="t"><b>Card</b><small>Not enabled in this demo</small></span></label>'+
+      '</fieldset>'+
+      '<label class="consent-row" style="color:var(--muted)"><input type="checkbox" id="orderConsent" required> I agree that ARDUA may use my details to process this order and contact me about delivery. See the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</label>'+
+      '<button class="btn block" type="submit" id="placeOrder">Place order</button>'+
+    '</form><aside id="coSummary"></aside></div>';
+  refreshCheckout();
+  openLayer('checkout');
+}
+function refreshCheckout(){
+  $('#coSummary').innerHTML=summaryHTML();
+}
+function showFormError(msg){
+  var m=$('#coErr');
+  if(!m){m=document.createElement('p');m.id='coErr';m.className='msg err';m.setAttribute('role','alert');var b=$('#placeOrder');b.parentNode.insertBefore(m,b)}
+  m.textContent=msg;
+}
+$('#coBody').addEventListener('submit',function(e){
+  if(e.target.id!=='coForm')return;
+  e.preventDefault();
+  if(!state.cart.length)return;
+  if(!ORDER_ENDPOINT){showFormError('Ordering is not set up yet. Please contact us directly.');return}
+  var sub=subtotal(),disc=discount(),total=sub-disc;
+  var no='ARD-'+String(Math.floor(100000+Math.random()*900000));
+  var f={first:$('#coFirst').value.trim(),last:$('#coLast').value.trim(),email:$('#coEmail').value.trim(),phone:$('#coPhone').value.trim(),addr:$('#coAddr').value.trim(),city:$('#coCity').value.trim(),zip:$('#coZip').value.trim(),country:$('#coCountry').value};
+  var count=cartCount();
+  var items=state.cart.map(function(l){var p=byId(l.id);return l.qty+' x '+p.name+' ('+l.size+') - '+fmt(p.price*l.qty)}).join('\n');
+  var lines=['ORDER '+no,'','ITEMS',items,'','Subtotal: '+fmt(sub)];
+  if(disc)lines.push('Discount ('+PROMO.code+'): -'+fmt(disc));
+  lines=lines.concat(['TOTAL (excluding delivery): '+fmt(total),'Delivery fee: to be confirmed with the customer','Payment: Cash on delivery','','CUSTOMER',f.first+' '+f.last,'Phone: '+f.phone,'Email: '+f.email,'','DELIVERY ADDRESS',f.addr,f.city+(f.zip?' '+f.zip:''),f.country]);
+  var btn=$('#placeOrder');btn.disabled=true;btn.textContent='Sending...';
+  var errEl=$('#coErr');if(errEl)errEl.textContent='';
+  fetch(ORDER_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify({_subject:'New ARDUA order '+no,email:f.email,name:f.first+' '+f.last,phone:f.phone,order_number:no,order_details:lines.join('\n'),total:fmt(total)})})
+  .then(function(r){if(!r.ok)throw new Error('send failed')})
+  .then(function(){
+    state.cart=[];state.promo=null;saveCart();renderCart();
+    $('#coBody').innerHTML='<div class="done"><span class="mono">Order received</span><h2 class="display" id="coTitle">Thanks, <span id="doneName"></span>.</h2><p id="doneText"></p><div class="ordno" id="doneNo"></div><button class="btn" type="button" data-close data-autofocus>Back to the shop</button></div>';
+    $('#doneName').textContent=f.first;
+    $('#doneText').textContent=count+(count===1?' cap':' caps')+' for '+fmt(total)+' plus delivery. We will contact you on '+f.phone+' to confirm the delivery fee and arrival date.';
+    $('#doneNo').textContent=no;
+    var a=$('#coBody [data-autofocus]');if(a)a.focus({preventScroll:true});
+    $('#checkout').scrollTop=0;
+  })
+  .catch(function(){
+    btn.disabled=false;btn.textContent='Place order';
+    showFormError('We could not send your order. Check your connection and try again.');
+  });
+});
+
+/* ---------- interactive hero photo viewer ----------
+   This cycles through the available product photos; it is a photo-view switcher,
+   not a true 360-degree capture of the physical cap. */
+(function(){
+  var viewer=$('#heroSpin'),photo=$('#heroSpinImage'),label=$('#spinIndex');
+  if(!viewer||!photo)return;
+  var frames=[
+    ['img/trucker.jpg','ARDUA trucker cap, three-quarter view'],
+    ['img/trucker-dark.jpg','ARDUA trucker cap in a dark studio scene'],
+    ['img/detail.jpg','Close-up of the ARDUA embroidered mark']
+  ];
+  var idx=0,startX=null,lastX=null;
+  function show(n){
+    idx=(n+frames.length)%frames.length;
+    photo.src=frames[idx][0];photo.alt=frames[idx][1];
+    label.textContent=String(idx+1).padStart(2,'0')+' / '+String(frames.length).padStart(2,'0');
+    $$('.spin-dots i',viewer).forEach(function(dot,i){dot.classList.toggle('active',i===idx)});
+  }
+  viewer.addEventListener('pointerdown',function(e){startX=e.clientX;lastX=e.clientX;if(viewer.setPointerCapture)viewer.setPointerCapture(e.pointerId)});
+  viewer.addEventListener('pointermove',function(e){
+    if(startX===null)return;
+    var delta=e.clientX-lastX;
+    if(Math.abs(e.clientX-startX)>14&&Math.abs(delta)>8){show(idx+(delta<0?1:-1));lastX=e.clientX;startX=e.clientX}
+  });
+  function end(){startX=null;lastX=null}
+  viewer.addEventListener('pointerup',end);viewer.addEventListener('pointercancel',end);
+  viewer.addEventListener('keydown',function(e){if(e.key==='ArrowRight'){e.preventDefault();show(idx+1)}else if(e.key==='ArrowLeft'){e.preventDefault();show(idx-1)}});
+})();
+
+/* ---------- cookie consent ----------
+   No analytics or ad trackers are loaded. Essential localStorage keeps the cart
+   functional; optional analytics is not activated by this page. */
+(function(){
+  var KEY='ardua.cookie-consent.v1',banner=$('#cookieBanner'),analytics=$('#analyticsConsent');
+  function read(){try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){return null}}
+  function open(){banner.hidden=false;analytics.focus()}
+  function save(allow){var consent={essential:true,analytics:!!allow,updatedAt:new Date().toISOString()};try{localStorage.setItem(KEY,JSON.stringify(consent))}catch(e){}banner.hidden=true}
+  var prior=read();if(!prior)banner.hidden=false;
+  $('#acceptCookies').addEventListener('click',function(){save(analytics.checked)});
+  $('#rejectCookies').addEventListener('click',function(){analytics.checked=false;save(false)});
+  $('#cookieSettings').addEventListener('click',function(){var c=read();analytics.checked=!!(c&&c.analytics);open()});
+})();
+
+/* ---------- init ---------- */
+loadCart();renderChips();renderGrid();renderCart();
+})();
+</script>
