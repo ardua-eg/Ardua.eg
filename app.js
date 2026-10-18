@@ -390,12 +390,12 @@ function placeOrder() {
   if (CFG.verifyPhone) payload.verify_token = verifyToken;
 
   var btn = $('#placeOrder'); btn.disabled = true; btn.textContent = 'Sending...';
-  var name = v('coName'), phone = v('coPhone');
+  var name = v('coName'), phone = v('coPhone'), email = v('coEmail');
   fetch(CFG.orderEndpoint, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
     .then(function (r) { if (r.status === 403) { verifyToken = ''; throw new Error('verify'); } if (!r.ok) throw new Error('send failed'); })
     .then(function () {
       state.cart = []; saveCart(); renderCart();
-      $('#coBody').innerHTML = '<div class="done"><span class="mono">Order received</span><h2 class="display" id="coTitle" tabindex="-1"></h2><p id="doneText"></p><div class="ordno" id="doneNo"></div><div id="doneWa"></div><button class="btn ghost" type="button" data-close>Back to the shop</button></div>';
+      $('#coBody').innerHTML = '<div class="done"><span class="mono">Order received</span><h2 class="display" id="coTitle" tabindex="-1"></h2><p id="doneText"></p><p id="doneMail"></p><div class="ordno" id="doneNo"></div><div id="doneWa"></div><button class="btn ghost" type="button" data-close>Back to the shop</button></div>';
       var wa = String(CFG.whatsappNumber || '').replace(/\D/g, '');
       if (wa) {
         $('#doneWa').innerHTML = '<p class="hint-t"><b>One last step:</b> tap the button and send the message so we know the number is yours. We only prepare orders that are confirmed on WhatsApp.</p><a class="btn" id="waBtn" rel="noopener"></a>';
@@ -404,6 +404,7 @@ function placeOrder() {
       }
       $('#coTitle').textContent = 'Thanks, ' + name.split(' ')[0] + '.';
       $('#doneText').textContent = count + (count === 1 ? ' cap' : ' caps') + ' for ' + fmt(total) + ' plus delivery (60 to 120 EGP). We will call you on ' + phone + ' to confirm the delivery fee and arrival date. You pay the courier in cash on delivery.';
+      $('#doneMail').textContent = 'We sent an order confirmation to ' + email + '. If you do not see it in a few minutes, check your spam folder.';
       $('#doneNo').textContent = no;
       $('#coTitle').focus();
       $('#checkout').scrollTop = 0;
