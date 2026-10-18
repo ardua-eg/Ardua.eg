@@ -18,3 +18,10 @@ Things you can edit (open the file on GitHub, tap the pencil, Commit changes):
 
 Orders arrive by email through Formspree. Test with a real order after each change.
 Fonts: Outfit and IBM Plex Mono, SIL Open Font License (see FONT-LICENSES.txt).
+
+PHONE VERIFICATION (SMS code)
+In Vercel > Project > Settings > Environment Variables add:
+  TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_VERIFY_SERVICE_SID  (from Twilio Verify)
+  TOKEN_SECRET   (any long random text)
+  ORDER_ENDPOINT = https://formspree.io/f/xjyglkpp
+Then redeploy. To turn verification off, set verifyPhone:false and orderEndpoint back to the Formspree URL in config.js.

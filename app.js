@@ -215,7 +215,7 @@ $('#openCart').addEventListener('click', function () { openDlg('cart'); });
 /* ---------- checkout ---------- */
 var FIELDS = [
   { id: 'coName', label: 'Full name', req: true, type: 'text', auto: 'name', msg: 'Enter your full name.' },
-  { id: 'coPhone', label: 'Phone number', req: true, type: 'tel', auto: 'tel', inputmode: 'tel', hint: 'We call you on this number to confirm delivery.', msg: 'Enter a phone number with at least 8 digits.' },
+  { id: 'coPhone', label: 'Phone number', req: true, type: 'tel', auto: 'tel', inputmode: 'tel', hint: CFG.verifyPhone ? 'An Egyptian mobile number, for example 01012345678. We text you a code to check it.' : 'We call you on this number to confirm delivery.', msg: CFG.verifyPhone ? 'Enter an Egyptian mobile number, for example 01012345678.' : 'Enter a phone number with at least 8 digits.' },
   { id: 'coEmail', label: 'Email (optional)', req: false, type: 'email', auto: 'email', inputmode: 'email', msg: 'Enter a valid email address, or leave this empty.' },
   { id: 'coAddr', label: 'Street address', req: true, type: 'text', auto: 'street-address', hint: 'Building, street and area.', msg: 'Enter your street address.' },
   { id: 'coCity', label: 'City or governorate', req: true, type: 'text', auto: 'address-level2', msg: 'Enter your city or governorate.' }
@@ -265,12 +265,19 @@ function setErr(id, msg) {
   else { err.textContent = ''; err.hidden = true; input.removeAttribute('aria-invalid'); }
   if (id === 'coConsent') $('#coConsentBox').setAttribute('data-invalid', msg ? 'true' : 'false');
 }
+function egPhone(raw) {
+  var d = String(raw).replace(/\D/g, '');
+  if (d.indexOf('0020') === 0) d = d.slice(4);
+  else if (d.indexOf('20') === 0 && d.length === 12) d = d.slice(2);
+  else if (d.charAt(0) === '0') d = d.slice(1);
+  return /^1[0125]\d{8}$/.test(d);
+}
 function validate() {
   var errs = [];
   FIELDS.forEach(function (f) {
     var v = document.getElementById(f.id).value.trim(), bad = false;
     if (f.req && !v) bad = true;
-    else if (f.id === 'coPhone' && v && v.replace(/\D/g, '').length < 8) bad = true;
+    else if (f.id === 'coPhone' && v && (CFG.verifyPhone ? !egPhone(v) : v.replace(/\D/g, '').length < 8)) bad = true;
     else if (f.id === 'coEmail' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) bad = true;
     if (bad) errs.push({ id: f.id, msg: f.msg, label: f.label.replace(' (optional)', '') }); setErr(f.id, bad ? f.msg : '');
   });
@@ -305,21 +312,72 @@ $('#coBody').addEventListener('submit', function (e) {
   if (errs.length) return;
   if (!CFG.orderEndpoint) { showFormMsg('Ordering is not set up yet. Please try again later.'); return; }
   if ($('#coTrap').value) return;
+  if (CFG.verifyPhone && !verifyToken) { handleVerify(); return; }
+  placeOrder();
+});
 
+/* ---------- phone verification ---------- */
+var verifyToken = '', verifyPhoneNo = '';
+function postJSON(url, data) {
+  return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) })
+    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j.httpStatus = r.status; return j; }); });
+}
+function codeMsg(msg, bad) { var m = $('#coCodeMsg'); if (m) { m.textContent = msg; m.className = bad ? 'field-err' : 'hint-t'; m.hidden = false; } }
+function sendCode() {
+  var phone = document.getElementById('coPhone').value.trim(), btn = $('#placeOrder');
+  btn.disabled = true; btn.textContent = 'Sending code...';
+  return postJSON('/api/send-code', { phone: phone }).then(function (j) {
+    btn.disabled = false;
+    if (j.ok) { verifyPhoneNo = phone; btn.textContent = 'Verify and place order'; codeMsg('We texted a 6-digit code to ' + phone + '. It can take a minute.', false); $('#coCode').focus(); return true; }
+    btn.textContent = $('#coCodeBox') ? 'Verify and place order' : 'Place order';
+    showFormMsg(j.error === 'too_many' ? 'Too many code requests. Please wait a few minutes and try again.' : j.error === 'bad_phone' ? 'That is not an Egyptian mobile number.' : 'We could not send the code. Check the number and try again.');
+    return false;
+  }).catch(function () { btn.disabled = false; btn.textContent = 'Place order'; showFormMsg('We could not reach the verification service. Check your connection and try again.'); return false; });
+}
+function handleVerify() {
+  var box = $('#coCodeBox');
+  if (!box) {
+    var d = document.createElement('fieldset'); d.id = 'coCodeBox';
+    d.innerHTML = '<legend>Verify your phone</legend><div class="fld"><label for="coCode">6-digit code</label>' +
+      '<input class="field-in" id="coCode" name="coCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" aria-describedby="coCodeMsg">' +
+      '<p class="hint-t" id="coCodeMsg" role="status"></p></div>' +
+      '<button class="btn ghost small" type="button" id="coResend">Send a new code</button>';
+    $('#coForm').insertBefore(d, $('#placeOrder'));
+    sendCode(); return;
+  }
+  var code = $('#coCode').value.replace(/\D/g, ''), phone = document.getElementById('coPhone').value.trim();
+  if (phone !== verifyPhoneNo) { sendCode(); codeMsg('You changed the number, so we sent a new code.', false); return; }
+  if (code.length < 4) { codeMsg('Enter the code from the text message.', true); $('#coCode').focus(); return; }
+  var btn = $('#placeOrder'); btn.disabled = true; btn.textContent = 'Checking...';
+  postJSON('/api/verify-code', { phone: phone, code: code }).then(function (j) {
+    if (j.ok && j.token) { verifyToken = j.token; placeOrder(); return; }
+    btn.disabled = false; btn.textContent = 'Verify and place order';
+    codeMsg('That code is not right. Check it, or send a new code.', true); $('#coCode').focus();
+  }).catch(function () { btn.disabled = false; btn.textContent = 'Verify and place order'; codeMsg('We could not check the code. Try again.', true); });
+}
+$('#coBody').addEventListener('click', function (e) {
+  if (e.target.id === 'coResend') { sendCode(); }
+});
+$('#coBody').addEventListener('input', function (e) {
+  if (e.target.id === 'coPhone' && verifyToken && e.target.value.trim() !== verifyPhoneNo) verifyToken = '';
+});
+
+function placeOrder() {
   var total = subtotal(), count = cartCount();
   var no = 'ARD-' + String(Math.floor(100000 + Math.random() * 900000));
   var v = function (id) { return document.getElementById(id).value.trim(); };
   var items = state.cart.map(function (l) { var p = byId(l.id); return l.qty + ' x ' + p.name + ' (' + l.size + ') = ' + fmt(p.price * l.qty); }).join('\n');
   var details = ['ORDER ' + no, '', 'ITEMS', items, '', 'Items total: ' + fmt(total), 'Delivery fee: to be confirmed with the customer', 'Payment: Cash on delivery', '',
-    'CUSTOMER', v('coName'), 'Phone: ' + v('coPhone')].concat(v('coEmail') ? ['Email: ' + v('coEmail')] : [])
+    'CUSTOMER', v('coName'), 'Phone: ' + v('coPhone') + (CFG.verifyPhone ? ' (verified by SMS)' : '')].concat(v('coEmail') ? ['Email: ' + v('coEmail')] : [])
     .concat(['', 'DELIVERY ADDRESS', v('coAddr'), v('coCity'), '', 'Consent: agreed to terms, refund policy and privacy policy at ' + new Date().toISOString()]).join('\n');
   var payload = { _subject: 'New ARDUA order ' + no, order_number: no, name: v('coName'), phone: v('coPhone'), order_details: details, total: fmt(total) };
   if (v('coEmail')) payload.email = v('coEmail');
+  if (CFG.verifyPhone) payload.verify_token = verifyToken;
 
   var btn = $('#placeOrder'); btn.disabled = true; btn.textContent = 'Sending...';
   var name = v('coName'), phone = v('coPhone');
   fetch(CFG.orderEndpoint, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-    .then(function (r) { if (!r.ok) throw new Error('send failed'); })
+    .then(function (r) { if (r.status === 403) { verifyToken = ''; throw new Error('verify'); } if (!r.ok) throw new Error('send failed'); })
     .then(function () {
       state.cart = []; saveCart(); renderCart();
       $('#coBody').innerHTML = '<div class="done"><span class="mono">Order received</span><h2 class="display" id="coTitle" tabindex="-1"></h2><p id="doneText"></p><div class="ordno" id="doneNo"></div><button class="btn" type="button" data-close>Back to the shop</button></div>';
@@ -330,10 +388,10 @@ $('#coBody').addEventListener('submit', function (e) {
       $('#checkout').scrollTop = 0;
     })
     .catch(function () {
-      btn.disabled = false; btn.textContent = 'Place order';
+      btn.disabled = false; btn.textContent = CFG.verifyPhone ? 'Verify and place order' : 'Place order';
       showFormMsg('We could not reach the order service. Check your connection and try again. Your cart is still saved.');
     });
-});
+}
 
 /* ---------- init ---------- */
 loadCart(); renderChips(); renderGrid(); renderCart();
