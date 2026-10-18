@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://formspree.io; base-uri 'none'; form-action 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="ARDUA embroidered caps in black twill with a raised white mark. Trucker and structured styles, cash on delivery in Egypt.">
+<meta name="theme-color" content="#0a0a0b">
+<title>ARDUA Caps</title>
+<link rel="icon" href="mark.png" type="image/png">
+<link rel="preload" href="outfit-bold.woff" as="font" type="font/woff" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="ARDUA, home"><img src="mark.png" alt="" width="32" height="26"><span>ARDUA</span></a>
+    <nav aria-label="Main">
+      <a href="#shop">Shop</a>
+      <a href="#mark">The mark</a>
+      <a href="#info">Info</a>
+    </nav>
+    <button class="cart-btn" id="openCart" type="button" aria-haspopup="dialog">Cart <b id="cartCount" data-zero="true" aria-hidden="true">0</b><span class="sr-only" id="cartLabel">, empty</span></button>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="mono">Embroidered caps</span>
+        <h1 class="display" id="heroTitle">Built<br>to climb.</h1>
+        <p class="lead">Two cap shapes, one mark. Black fabric, white thread, stitched to catch the light.</p>
+        <div class="actions">
+          <a class="btn" href="#shop">Shop caps</a>
+          <a class="btn ghost" href="#mark">See the mark</a>
+        </div>
+      </div>
+      <div class="stage" id="stage" role="group" aria-label="3D view of an ARDUA cap, turning 360 degrees">
+        <canvas id="capCanvas" aria-hidden="true"></canvas>
+        <img class="fallback" id="capFallback" src="trucker-dark.jpg" alt="Black ARDUA trucker cap with a white embroidered arrow mark, lit from behind in smoke" width="1000" height="1000" hidden>
+        <div class="stage-ui" id="stageUi" hidden>
+          <span class="mono hint">3D preview. Drag to turn.</span>
+          <div class="stage-btns">
+            <button class="icon-btn" type="button" id="rotL" aria-label="Turn cap left">&#8592;</button>
+            <button class="icon-btn wide" type="button" id="rotPlay" aria-pressed="false">Pause</button>
+            <button class="icon-btn" type="button" id="rotR" aria-label="Turn cap right">&#8594;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="wrap">
+      <ul>
+        <li><span class="mono">Embroidery</span><span>Raised white thread on black</span></li>
+        <li><span class="mono">Collection</span><span>2 caps now, 1 coming soon</span></li>
+        <li><span class="mono">Payment</span><span>Cash on delivery</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="shop" id="shop" aria-labelledby="shopTitle">
+    <div class="wrap">
+      <div class="shop-head">
+        <h2 class="display" id="shopTitle">The caps</h2>
+        <p class="mono" id="resultCount" role="status"></p>
+      </div>
+      <div class="controls">
+        <div class="fld search"><label for="search">Search caps</label><input class="field-in" id="search" type="search" autocomplete="off" enterkeyhint="search"></div>
+        <div class="fld"><span class="lab" id="chipsLab">Style</span><div class="chips" id="chips" role="group" aria-labelledby="chipsLab"></div></div>
+        <div class="fld sort"><label for="sort">Sort by</label>
+          <select class="field-in" id="sort">
+            <option value="featured">Featured</option>
+            <option value="low">Price, low to high</option>
+            <option value="high">Price, high to low</option>
+            <option value="name">Name, A to Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" hidden>
+        <p>No caps match your search.</p>
+        <button class="btn ghost small" id="clearFilters" type="button">Clear filters</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="soon" id="soon" aria-labelledby="soonTitle">
+    <div class="wrap">
+      <span class="mono">Next drop</span>
+      <h2 class="display" id="soonTitle">Coming soon</h2>
+      <article class="soon-card">
+        <div class="pic"><img src="washed.jpg" alt="ARDUA washed streetwear cap in faded black with a white embroidered mark" width="1254" height="627" loading="lazy"></div>
+        <div class="txt">
+          <span class="tag">Coming soon</span>
+          <h3>ARDUA Washed Cap</h3>
+          <p>A relaxed, pre-washed black cap with a soft crown and a metal buckle strap. Not available to order yet.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="craft" id="mark" aria-labelledby="markTitle">
+    <div class="wrap">
+      <div class="art"><img src="detail.jpg" alt="Close-up of the white embroidered ARDUA mark on black twill" width="1000" height="1000" loading="lazy"></div>
+      <div>
+        <span class="mono">The mark</span>
+        <h2 class="display" id="markTitle">Two blades and a rising arrow.</h2>
+        <p>Every ARDUA cap carries the same mark, stitched in dense white thread. It sits raised against the weave, so it catches side light and reads from across a room.</p>
+        <dl class="facts">
+          <div><dt class="mono">Thread</dt><dd>White, raised satin stitch</dd></div>
+          <div><dt class="mono">Fabric</dt><dd>Black twill, cotton and mesh</dd></div>
+          <div><dt class="mono">Shapes</dt><dd>Trucker, structured</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="wrap"><div><img src="wordmark.jpg" alt="ARDUA wordmark embroidered in white thread on black fabric" width="1300" height="709" loading="lazy"></div></div>
+  </div>
+
+  <section class="info" id="info" aria-labelledby="infoTitle">
+    <div class="wrap">
+      <h2 class="display" id="infoTitle">Before you order</h2>
+      <div class="info-grid">
+        <div><h3>Delivery</h3><p>We confirm your delivery fee and arrival date with you by phone after you order.</p></div>
+        <div><h3>Payment</h3><p>Cash on delivery. You pay the courier when your order arrives.</p></div>
+        <div><h3>Returns</h3><p>All sales are final. Read the <a href="refunds.html">refund policy</a> for damaged or wrong items.</p></div>
+        <div><h3>Size</h3><p>Every cap is one size and adjusts at the back.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="ARDUA, home"><img src="mark.png" alt="" width="32" height="26"><span>ARDUA</span></a>
+    <nav aria-label="Legal">
+      <ul>
+        <li><a href="terms.html">Terms</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="refunds.html">Refunds</a></li>
+        <li><a href="cookies.html">Cookies</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<dialog class="drawer" id="cart" aria-labelledby="cartTitle">
+  <div class="dr-head"><h2 id="cartTitle">Your cart</h2><button class="icon-btn" type="button" data-close aria-label="Close cart">&#10005;</button></div>
+  <div class="dr-body" id="cartBody"></div>
+  <div class="dr-foot" id="cartFoot"></div>
+</dialog>
+
+<dialog class="sheet" id="product" aria-labelledby="pvTitle">
+  <button class="icon-btn x" type="button" data-close aria-label="Close">&#10005;</button>
+  <div id="pvBody"></div>
+</dialog>
+
+<dialog class="sheet wide" id="checkout" aria-labelledby="coTitle">
+  <button class="icon-btn x" type="button" data-close aria-label="Close checkout">&#10005;</button>
+  <div id="coBody"></div>
+</dialog>
+
+<div class="sr-only" id="cartStatus" role="status" aria-live="polite"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span><button type="button" id="toastCart">View cart</button></div>
+
+<noscript><p class="wrap">ARDUA needs JavaScript to show the shop. Please turn it on and reload.</p></noscript>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script type="module" src="cap-viewer.js"></script>
+</body>
+</html>
