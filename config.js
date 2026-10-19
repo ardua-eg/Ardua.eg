@@ -12,6 +12,12 @@ window.ARDUA_CONFIG = {
   contactEmail: 'ardua.eg@gmail.com',
   contactPhone: '',
 
+  /* Your social pages. Paste the full link, starting with https://
+     Example: instagramUrl: 'https://www.instagram.com/yourname'
+     Leave empty to hide. */
+  instagramUrl: 'https://www.instagram.com/ardua.eg',
+  tiktokUrl: 'https://www.tiktok.com/@ardua.eg',
+
   /* How many days after delivery a customer can report a damaged or wrong item. */
   damageReportDays: 3
 };

@@ -265,3 +265,8 @@ dialog.sheet.wide{width:min(1120px,calc(100% - 24px))}
 
 .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 @media (max-width:480px){.row3{grid-template-columns:1fr 1fr}.row3 .fld:first-child{grid-column:1/-1}}
+
+.soc-row{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+
+.price .was{margin-left:8px;font-size:.8em;color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.price .now{color:var(--fg)}

@@ -7,13 +7,13 @@ var CART_KEY = 'ardua.cart.v1';
 
 /* ---------- catalog ---------- */
 var PRODUCTS = [
-  { id: 'trucker', name: 'ARDUA Trucker', cat: 'trucker', catLabel: 'Trucker', price: 250,
+  { id: 'trucker', name: 'ARDUA Trucker', cat: 'trucker', catLabel: 'Trucker', price: 250, was: 300,
     short: 'Black front, mesh back, raised white mark.',
     desc: 'A five-panel trucker with a clean black front and a breathable mesh back. The ARDUA mark is embroidered in dense white thread on the front panel. Curved visor, snapback at the rear.',
     specs: [['Style', 'Five-panel trucker'], ['Front', 'Black twill, embroidered mark'], ['Back', 'Black mesh, snapback'], ['Visor', 'Curved, stitched rows'], ['Fit', 'One size']],
     sizes: ['One size'],
     images: [['trucker.jpg', 'ARDUA trucker cap in black with a white embroidered mark, three-quarter view'], ['trucker-dark.jpg', 'ARDUA trucker cap lit from behind in dark smoke'], ['detail.jpg', 'Close-up of the white embroidered mark']] },
-  { id: 'structured', name: 'ARDUA Structured Cap', cat: 'structured', catLabel: 'Structured', price: 250,
+  { id: 'structured', name: 'ARDUA Structured Cap', cat: 'structured', catLabel: 'Structured', price: 250, was: 300,
     short: 'A firm crown that holds its shape.',
     desc: 'A structured six-panel cap with a firm crown and a curved visor sewn with concentric rows of stitching. The white ARDUA mark is raised from the black twill, and stitched eyelets on the panels let heat out.',
     specs: [['Style', 'Six-panel, structured'], ['Fabric', 'Black twill'], ['Panels', 'Stitched eyelets'], ['Visor', 'Curved, stitched rows'], ['Fit', 'One size']],
@@ -51,6 +51,10 @@ function addToCart(id, size, qty) {
   saveCart(); renderCart();
 }
 function cartCount() { return state.cart.reduce(function (n, l) { return n + l.qty; }, 0); }
+function priceHTML(p) {
+  if (!p.was || p.was <= p.price) return fmt(p.price);
+  return '<span class="now">' + fmt(p.price) + '</span> <s class="was" aria-hidden="true">' + fmt(p.was) + '</s><span class="sr-only"> (was ' + fmt(p.was) + ')</span>';
+}
 function subtotal() { return state.cart.reduce(function (n, l) { return n + byId(l.id).price * l.qty; }, 0); }
 
 /* ---------- dialogs ---------- */
@@ -105,7 +109,7 @@ function cardHTML(p) {
     '<img src="' + p.images[0][0] + '" alt="' + esc(p.images[0][1]) + '" width="1254" height="627" loading="lazy"></button>' +
     '<div class="body"><span class="mono">' + esc(p.catLabel) + '</span>' +
     '<h3>' + esc(p.name) + '</h3><p class="short">' + esc(p.short) + '</p>' +
-    '<div class="row"><span class="price">' + fmt(p.price) + '</span>' +
+    '<div class="row"><span class="price">' + priceHTML(p) + '</span>' +
     '<button class="btn small" type="button" data-quick="' + p.id + '" aria-label="Add ' + esc(p.name) + ' to cart">Add to cart</button></div></div></article>';
 }
 function renderGrid() {
@@ -144,7 +148,7 @@ function openProduct(id) {
     '<div class="pv"><div class="pv-media"><div class="pv-main"><img id="pvMain" src="' + p.images[0][0] + '" alt="' + esc(p.images[0][1]) + '" width="1254" height="627"></div><div class="thumbs">' + thumbs + '</div></div>' +
     '<div class="pv-info"><span class="mono">' + esc(p.catLabel) + '</span>' +
     '<h2 class="display" id="pvTitle">' + esc(p.name) + '</h2>' +
-    '<p class="price">' + fmt(p.price) + '</p><p class="desc">' + esc(p.desc) + '</p>' +
+    '<p class="price">' + priceHTML(p) + '</p><p class="desc">' + esc(p.desc) + '</p>' +
     '<p><span class="mono">Size</span><br>' + esc(p.sizes[0]) + ', adjustable</p>' +
     '<div class="buy"><div class="stepper" role="group" aria-label="Quantity"><button type="button" data-qty="-1" aria-label="Decrease quantity">&minus;</button><output id="pvQty" aria-live="polite">1</output><button type="button" data-qty="1" aria-label="Increase quantity">+</button></div>' +
     '<button class="btn" type="button" id="pvAdd">Add to cart</button></div>' +
@@ -404,7 +408,9 @@ function placeOrder() {
       }
       $('#coTitle').textContent = 'Thanks, ' + name.split(' ')[0] + '.';
       $('#doneText').textContent = count + (count === 1 ? ' cap' : ' caps') + ' for ' + fmt(total) + ' plus delivery (60 to 120 EGP). We will call you on ' + phone + ' to confirm the delivery fee and arrival date. You pay the courier in cash on delivery.';
-      $('#doneMail').textContent = 'We sent an order confirmation to ' + email + '. If you do not see it in a few minutes, check your spam folder.';
+      $('#doneMail').textContent = 'For better service, take a screenshot of this screen and send it to us in a DM with your order number ' + no + '.';
+      var soc = socialLinks('btn ghost small');
+      if (soc) $('#doneMail').insertAdjacentHTML('afterend', '<div class="soc-row">' + soc + '</div>');
       $('#doneNo').textContent = no;
       $('#coTitle').focus();
       $('#checkout').scrollTop = 0;
@@ -414,6 +420,22 @@ function placeOrder() {
       showFormMsg('We could not reach the order service. Check your connection and try again. Your cart is still saved.');
     });
 }
+
+/* ---------- social links ---------- */
+function socialLinks(cls) {
+  var out = '';
+  [['instagramUrl', 'Instagram'], ['tiktokUrl', 'TikTok']].forEach(function (p) {
+    var u = CFG[p[0]];
+    if (u && /^https:\/\//.test(u)) out += '<a class="' + cls + '" href="' + esc(u) + '" target="_blank" rel="noopener">' + p[1] + '</a>';
+  });
+  return out;
+}
+(function () {
+  var ul = document.querySelector('footer nav ul');
+  if (!ul) return;
+  var tmp = document.createElement('div'); tmp.innerHTML = socialLinks('');
+  [].slice.call(tmp.children).forEach(function (a) { var li = document.createElement('li'); li.appendChild(a); ul.appendChild(li); });
+})();
 
 /* ---------- init ---------- */
 loadCart(); renderChips(); renderGrid(); renderCart();
