@@ -196,7 +196,7 @@ function renderCart() {
   body.innerHTML = lines;
   foot.innerHTML =
     '<div class="totals"><div class="grand"><span>Items total</span><span>' + fmt(subtotal()) + '</span></div></div>' +
-    '<p class="hint-t">Delivery costs 60 to 120 EGP depending on your area. We confirm the exact fee with you after you order.</p>' +
+    '<p class="hint-t">Delivery fee is confirmed with you after you order.</p>' +
     '<button class="btn block" type="button" id="goCheckout">Checkout</button>';
 }
 $('#cartBody').addEventListener('click', function (e) {
@@ -254,8 +254,8 @@ function summaryHTML() {
   }).join('');
   return '<h3 class="mono">Order summary</h3><div>' + lines + '</div>' +
     '<div class="totals"><div><span>Items total</span><span>' + fmt(subtotal()) + '</span></div>' +
-    '<div><span>Delivery</span><span>60 to 120 EGP, confirmed after you order</span></div>' +
-    '<div class="grand"><span>Pay on delivery</span><span>' + fmt(subtotal()) + ' + 60 to 120 EGP delivery</span></div></div>' +
+    '<div><span>Delivery</span><span>Confirmed after you order</span></div>' +
+    '<div class="grand"><span>Pay on delivery</span><span>' + fmt(subtotal()) + ' + delivery</span></div></div>' +
     '<p class="hint-t">Payment is cash on delivery. You pay the courier when your order arrives.</p>';
 }
 function openCheckout() {
@@ -386,7 +386,7 @@ function placeOrder() {
   var no = 'ARD-' + String(Math.floor(100000 + Math.random() * 900000));
   var v = function (id) { return document.getElementById(id).value.trim(); };
   var items = state.cart.map(function (l) { var p = byId(l.id); return l.qty + ' x ' + p.name + ' (' + l.size + ') = ' + fmt(p.price * l.qty); }).join('\n');
-  var details = ['ORDER ' + no, '', 'ITEMS', items, '', 'Items total: ' + fmt(total), 'Delivery fee: 60 to 120 EGP, exact fee to be confirmed with the customer', 'Payment: Cash on delivery', '',
+  var details = ['ORDER ' + no, '', 'ITEMS', items, '', 'Items total: ' + fmt(total), 'Delivery fee: to be confirmed with the customer', 'Payment: Cash on delivery', '',
     'CUSTOMER', v('coName'), 'Phone: ' + v('coPhone') + (CFG.verifyPhone ? ' (verified by SMS)' : '')].concat(v('coEmail') ? ['Email: ' + v('coEmail')] : [])
     .concat(['', 'DELIVERY ADDRESS', 'Governorate: ' + v('coGov'), 'City / area: ' + v('coCity'), 'Street: ' + v('coStreet'), 'Building: ' + v('coBuilding'), 'Floor: ' + v('coFloor'), 'Apartment: ' + v('coApt'), 'Landmark: ' + (v('coLandmark') || '-'), '', 'Consent: agreed to terms, refund policy and privacy policy at ' + new Date().toISOString()]).join('\n');
   var payload = { _subject: 'New ARDUA order ' + no, order_number: no, name: v('coName'), phone: v('coPhone'), order_details: details, total: fmt(total) };
@@ -407,7 +407,7 @@ function placeOrder() {
         a.href = 'https://wa.me/' + wa + '?text=' + encodeURIComponent('Hello ARDUA, I confirm my order ' + no + '. My name is ' + name + '.');
       }
       $('#coTitle').textContent = 'Thanks, ' + name.split(' ')[0] + '.';
-      $('#doneText').textContent = count + (count === 1 ? ' cap' : ' caps') + ' for ' + fmt(total) + ' plus delivery (60 to 120 EGP). We will call you on ' + phone + ' to confirm the delivery fee and arrival date. You pay the courier in cash on delivery.';
+      $('#doneText').textContent = count + (count === 1 ? ' cap' : ' caps') + ' for ' + fmt(total) + ' plus delivery. We will call you on ' + phone + ' to confirm the delivery fee and arrival date. You pay the courier in cash on delivery.';
       $('#doneMail').textContent = 'For better service, take a screenshot of this screen and send it to us in a DM with your order number ' + no + '.';
       var soc = socialLinks('btn ghost small');
       if (soc) $('#doneMail').insertAdjacentHTML('afterend', '<div class="soc-row">' + soc + '</div>');
