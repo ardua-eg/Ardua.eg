@@ -389,8 +389,14 @@ function placeOrder() {
 
   var btn = $('#placeOrder'); btn.disabled = true; btn.textContent = 'Sending...';
   var name = v('coName'), phone = v('coPhone'), email = v('coEmail');
-  fetch(CFG.orderEndpoint, { method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-    .then(function (r) { if (r.status === 403) { verifyToken = ''; throw new Error('verify'); } if (!r.ok) throw new Error('send failed'); })
+  var rec = { order_number: no, name: name, phone: phone, email: email, gov: v('coGov'), city: v('coCity'), street: v('coStreet'), building: v('coBuilding'), floor: v('coFloor'), apt: v('coApt'), landmark: v('coLandmark'),
+    items: state.cart.map(function (l) { return { id: l.id, qty: l.qty, size: l.size }; }) };
+  var jh = { 'Accept': 'application/json', 'Content-Type': 'application/json' };
+  // Two copies of every order: the dashboard database and the email. One working is enough.
+  var toDb = fetch('/api/order', { method: 'POST', headers: jh, body: JSON.stringify(rec) }).then(function (r) { return r.ok; }, function () { return false; });
+  var toMail = fetch(CFG.orderEndpoint, { method: 'POST', headers: jh, body: JSON.stringify(payload) }).then(function (r) { if (r.status === 403) verifyToken = ''; return r.ok; }, function () { return false; });
+  Promise.all([toDb, toMail])
+    .then(function (ok) { if (!ok[0] && !ok[1]) throw new Error('send failed'); })
     .then(function () {
       state.cart = []; saveCart(); renderCart();
       $('#coBody').innerHTML = '<div class="done"><span class="mono">Order received</span><h2 class="display" id="coTitle" tabindex="-1"></h2><p id="doneText"></p><p id="doneMail"></p><div class="ordno" id="doneNo"></div><div id="doneWa"></div><button class="btn ghost" type="button" data-close>Back to the shop</button></div>';
