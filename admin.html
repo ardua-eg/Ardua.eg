@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex,nofollow">
+<title>ARDUA Orders</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<main class="wrap">
+  <section id="login" class="login" hidden>
+    <span class="mono">ardua.shop</span>
+    <h1>Orders</h1>
+    <form id="loginForm" novalidate>
+      <label for="pw" class="mono">Password</label>
+      <input class="in" id="pw" type="password" autocomplete="current-password">
+      <p class="err" id="loginErr" role="alert" hidden></p>
+      <button class="btn primary" type="submit">Open dashboard</button>
+    </form>
+  </section>
+
+  <section id="app" hidden>
+    <header>
+      <div><span class="mono">ardua.shop</span><h1>Orders</h1></div>
+      <div class="head-actions">
+        <button class="btn" id="refresh" type="button">Refresh</button>
+        <button class="btn" id="exportBtn" type="button">Export CSV</button>
+        <button class="btn" id="logout" type="button">Log out</button>
+      </div>
+    </header>
+    <p class="banner" id="notice" role="status" hidden></p>
+    <div class="tiles" aria-label="Summary">
+      <div class="tile" id="tPending"><span class="mono">Pending</span><b id="vPending">0</b></div>
+      <div class="tile"><span class="mono">In progress</span><b id="vProg">0</b></div>
+      <div class="tile"><span class="mono">Completed</span><b id="vDone">0</b></div>
+      <div class="tile"><span class="mono">Sales completed</span><b id="vSales">0</b></div>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Status"></div>
+    <div class="field"><label for="q" class="mono">Search name, phone, order number or city</label><input class="in" id="q" type="search" autocomplete="off"></div>
+    <div class="list" id="list" aria-live="polite"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="adminpage.js"></script>
+</body>
+</html>
