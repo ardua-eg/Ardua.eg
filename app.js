@@ -7,12 +7,6 @@ var CART_KEY = 'ardua.cart.v1';
 
 /* ---------- catalog ---------- */
 var PRODUCTS = [
-  { id: 'trucker', name: 'ARDUA Trucker', cat: 'trucker', catLabel: 'Trucker', price: 250, was: 300,
-    short: 'Black front, mesh back, raised white mark.',
-    desc: 'A five-panel trucker with a clean black front and a breathable mesh back. The ARDUA mark is embroidered in dense white thread on the front panel. Curved visor, snapback at the rear.',
-    specs: [['Style', 'Five-panel trucker'], ['Front', 'Black twill, embroidered mark'], ['Back', 'Black mesh, snapback'], ['Visor', 'Curved, stitched rows'], ['Fit', 'One size']],
-    sizes: ['One size'],
-    images: [['trucker.jpg', 'ARDUA trucker cap in black with a white embroidered mark, three-quarter view'], ['trucker-dark.jpg', 'ARDUA trucker cap lit from behind in dark smoke'], ['detail.jpg', 'Close-up of the white embroidered mark']] },
   { id: 'structured', name: 'ARDUA Structured Cap', cat: 'structured', catLabel: 'Structured', price: 250, was: 300,
     short: 'A firm crown that holds its shape.',
     desc: 'A structured six-panel cap with a firm crown and a curved visor sewn with concentric rows of stitching. The white ARDUA mark is raised from the black twill, and stitched eyelets on the panels let heat out.',
@@ -20,7 +14,7 @@ var PRODUCTS = [
     sizes: ['One size'],
     images: [['structured.jpg', 'ARDUA structured cap in black on a dark plinth'], ['detail.jpg', 'Close-up of the white embroidered mark'], ['wordmark.jpg', 'ARDUA wordmark embroidered on black fabric']] }
 ];
-var CATS = [['all', 'All'], ['trucker', 'Trucker'], ['structured', 'Structured']];
+var CATS = [['all', 'All'], ['structured', 'Structured']];
 
 var state = { cat: 'all', q: '', sort: 'featured', cart: [] };
 var cur = null;
@@ -439,4 +433,5 @@ function socialLinks(cls) {
 
 /* ---------- init ---------- */
 loadCart(); renderChips(); renderGrid(); renderCart();
+if (PRODUCTS.length < 2) { var ctl = $('.controls'); if (ctl) ctl.hidden = true; }
 })();
